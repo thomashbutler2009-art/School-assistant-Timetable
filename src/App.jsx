@@ -223,18 +223,13 @@ export default function App() {
 
     try {
       const systemPrompt = buildSystemPrompt(week, day, tasks);
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          system: systemPrompt,
-          messages: [{ role: "user", content: userMsg }],
-        }),
+        body: JSON.stringify({ system: systemPrompt, message: userMsg }),
       });
       const data = await response.json();
-      const reply = data.content?.[0]?.text || "Sorry, couldn't get a response.";
+      const reply = data.reply || "Sorry, couldn't get a response.";
       setMessages(prev => [...prev, { role: "assistant", text: reply }]);
     } catch {
       setMessages(prev => [...prev, { role: "assistant", text: "Something went wrong. Try again!" }]);
